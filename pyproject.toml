@@ -1,0 +1,26 @@
+
+[project]
+name = "forecast-lab"
+version = "0.1.0"
+description = "Modular forecasting lab with model registry and UI"
+requires-python = ">=3.10"
+dependencies = [
+  "numpy>=1.26",
+  "pandas>=2.2",
+  "matplotlib>=3.7",
+  "ipywidgets>=8"
+]
+
+[project.optional-dependencies]
+chronos = ["torch>=2.2,<3", "transformers>=4.40"]
+timesfm = ["torch>=2.2,<3"]
+
+[tool.setuptools]
+package-dir = {"" = "."}
+
+[tool.setuptools.packages.find]
+include = ["forecast_lab*"]
+
+[project.scripts]
+fl-run = "scripts.run:main"
+fl-bench = "scripts.bench:main"
