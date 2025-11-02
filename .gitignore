@@ -1,8 +1,8 @@
+﻿data/raw/
+data/kept_adam/
+results/
+!data/samples/     # μικρά δείγματα επιτρέπονται
 
 __pycache__/
 *.pyc
-.env
 .venv/
-.ipynb_checkpoints/
-.DS_Store
-*.csv
