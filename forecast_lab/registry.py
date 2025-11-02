@@ -1,30 +1,32 @@
+﻿"""
+Model registry (dynamic import version)
+---------------------------------------
+Keeps Prophet and LSTM as lightweight skeletons.
+"""
 
-from dataclasses import dataclass
-from typing import Any, Callable, Dict
+from typing import Dict, Any, Callable
 
-@dataclass
-class ModelEntry:
-    name: str
-    run_fn: Callable[[Any, dict], dict]
-    schema: dict
+_REGISTRY: Dict[str, Callable[[Any, Dict[str, Any]], Dict[str, Any]]] = {}
 
-_REGISTRY: Dict[str, ModelEntry] = {}
-
-def register_model(name: str, schema: dict):
-    def _wrap(fn):
-        if name in _REGISTRY:
-            raise ValueError(f"Model '{name}' already registered")
-        _REGISTRY[name] = ModelEntry(name=name, run_fn=fn, schema=schema)
-        return fn
-    return _wrap
+def register(name: str, fn: Callable):
+    """Manual register (if needed)."""
+    _REGISTRY[name] = fn
 
 def list_models():
-    return sorted(_REGISTRY.keys())
+    """List available registered models."""
+    return list(_REGISTRY.keys())
 
 def get_schema(name: str):
-    return _REGISTRY[name].schema
+    """Get model schema dynamically."""
+    mod = __import__(f"forecast_lab.models.{name}", fromlist=["*"])
+    return getattr(mod, "get_schema")()
 
-def run_model(name: str, data, cfg: dict):
-    if name not in _REGISTRY:
-        raise KeyError(f"Unknown model '{name}'. Available: {list_models()}")
-    return _REGISTRY[name].run_fn(data, cfg)
+def run_model(name: str, data, cfg):
+    """Dynamically import and execute model.run()"""
+    try:
+        mod = __import__(f"forecast_lab.models.{name}", fromlist=["*"])
+    except Exception as e:
+        raise KeyError(f"Unknown model '{name}'") from e
+    return getattr(mod, "run")(data, cfg)
+
+# No heavy imports here — Prophet and LSTM are loaded only when called.
