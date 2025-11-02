@@ -1,0 +1,3 @@
+[console_scripts]
+fl-bench = scripts.bench:main
+fl-run = scripts.run:main

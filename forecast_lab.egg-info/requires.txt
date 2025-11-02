@@ -1,0 +1,11 @@
+numpy>=1.26
+pandas>=2.2
+matplotlib>=3.7
+ipywidgets>=8
+
+[chronos]
+torch<3,>=2.2
+transformers>=4.40
+
+[timesfm]
+torch<3,>=2.2
